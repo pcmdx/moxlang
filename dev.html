@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+  <meta content="utf-8" http-equiv="encoding">
+  <style type="text/css">
+    body {
+        background-color: #707070;
+        color: #2F4F4F;
+        font-family: Helvetica;
+        font-size: 1.1em;
+        font-weight: 100;
+        margin: 0;
+        padding: 0;
+    }
+    textarea, #output{
+        background-color: #F8F8FF;
+        border: 2px solid #D3D3D3;
+    }
+    td {
+        padding: 5px 10px 5px 10px;
+    }
+    .container {
+        background-color: #F5F5F5;
+        box-shadow: 0 0 30px 1px black;
+        margin: 0 auto;
+        padding: 20px;
+        width: 80%;
+    }
+  </style>
+ </head>
+ <body>
+  <div class="container">
+  <h1>Welcome to Moxlang</h1>
+  <p>
+  Moxlang is a compact language designed for small programs with an example interpreter released under GPL.
+  </p>
+  <p>
+   <a href="https://github.com/paulmdx/moxlang">https://github.com/paulmdx/moxlang</a>
+  </p>
+  <h2>Try it now</h2>
+  Select program: <select id="programs" onchange="document.getElementById('code').value = this.options[this.selectedIndex].value">
+   <option value="">Blank program</option>
+
+   <option value="#
+Hello World
+#
+$M
+    'Hello World'w">Hello World</option>
+
+   <option value="#
+ Print an ASCII maze - note the JavaScript calls are slow.
+#
+$I
+    60C
+    {
+        2rX
+        iX=0'\'w.
+        iX=1'/'w.
+        -C
+        iC=0b 
+    }
+$M
+    20D
+    {
+        @I
+        -D
+        iD=0b
+        '\n'w
+    }">Maze</option>
+   <option value="#
+  Output 10 fibonacci sequence numbers
+#
+$N                    # Declare function N               #
+    AT                # Copy value from variable A to T  #
+    T+B               # Increment variable T by B        #
+    BA                # Copy value from variable B to A  #
+    TB                # Copy value from variable T to B  #
+    ','w              # Write comma string               #
+    Bw                # Write variable B                 #
+$M                    # Declare main function            #
+    '1,2'w            # Write first two fib numbers      #
+    1A                # Set variable A to 1              #
+    2B                # Set variable B to 2              #
+    8C                # Set variable C to 8              #
+    {                 # Start infinite loop              #
+        @N            # Call function N                  #
+        -C            # Decrement variable C             #
+        iC=0b         # If variable C == 0, break        #
+    }                 # End loop                         #">Fibonacci</option>
+
+   <option value="#
+Lesson 1 - main function
+#
+$M
+    # Code goes here #">Lesson 1</option>
+
+   <option value="#
+Lesson 2 - assignments
+#
+$M
+    'output:\n'A      # Assign string to variable A #
+    9B                # Assign number to variable B #">Lesson 2</option>
+
+   <option value="#
+Lesson 3 - operators
+#
+$M
+    'output:\n'A
+    9B
+    Aw                   # Write out variable A #
+    Bw                   # Write out variable B #">Lesson 3</option>
+
+   <option value="#
+Lesson 4 - increment and decrementing
+#
+$M
+    'output:\n'A
+    9B
+    Aw
+    Bw
+    -B                # Decrement variable B        #
+    Bw                # Output variable B           #
+    5D                # Assign number to variable X #
+    B-D               # Decrement B by D            #
+    Bw                # Output variable again       #">Lesson 4</option>
+
+   <option value="#
+Lesson 5 - functions
+#
+$I                    # Declare function I #
+    'output:\n'A
+    9B
+$P                    # Declare function P #
+    Aw
+    Bw
+    -B
+    Bw
+    5D
+    B-D
+    Bw
+$M
+    @I                # Call function I #
+    @P                # Call function P #">Lesson 5</option>
+   </select><br/>
+   <textarea id='code' rows="20" style="width: 100%"></textarea><br/>
+   <input type="button" onclick="run()" value="Run">
+  <pre id="output" style="display: none"></pre>
+  <h2>Reference</h2>
+  <table>
+   <tr><td>$M</td><td>Declare main function</td></tr>
+   <tr><td>$X</td><td>Declare function X</td></tr>
+   <tr><td># xyz #</td><td>Comment</td></tr>
+   <tr><td>A-Y</td><td>Variable names</td></tr>
+   <tr><td>123</td><td>Static number</td></tr>
+   <tr><td>'123'</td><td>Static string</td></tr>
+   <tr><td>w</td><td>Write to screen</td></tr>
+   <tr><td>kX</td><td>Ask user for integer, assign to X</td></tr>
+   <tr><td>{code}</td><td>Infinite loop</td></tr>
+   <tr><td>b</td><td>Break</td></tr>
+   <tr><td>@A</td><td>Call function A</td></tr>
+   <tr><td>+X</td><td>Prefix increment X</td></tr>
+   <tr><td>X+B</td><td>Infix increment</td></tr>
+   <tr><td>-X</td><td>Prefix decrement X</td></tr>
+   <tr><td>X-B</td><td>Infix decrement</td></tr>
+   <tr><td>iC=1code.</td><td>If statement, executing code</td></tr>
+   <tr><td>iC=1b</td><td>If statement, breaking</td></tr>
+   <tr><td>'Math.random()'jX</td><td>Execute JavaScript, assigning X (slow)</td></tr>
+   <tr><td>'5rX</td><td>Generate random number 0-4, assigning to X</td></tr>
+  </table>
+  </div>
+  <script src="moxlang2.js" type="text/javascript"></script>
+  <script type="text/javascript">
+    var programs = document.getElementById('programs');
+    programs.selectedIndex = '1';
+    document.getElementById('code').value = programs.options[1].value
+
+    // http://stackoverflow.com/a/13130/94503
+    var myInput = document.getElementById("code");
+    if(myInput.addEventListener ) {
+        myInput.addEventListener('keydown',this.keyHandler,false);
+    } else if(myInput.attachEvent ) {
+        myInput.attachEvent('onkeydown',this.keyHandler); /* damn IE hack */
+    }
+
+    function keyHandler(e) {
+        var TABKEY = 9;
+        if(e.keyCode == TABKEY) {
+            this.value += "    ";
+            if(e.preventDefault) {
+                e.preventDefault();
+            }
+            return false;
+        }
+    }
+  </script>
+ </body>
+</html>
